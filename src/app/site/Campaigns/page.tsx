@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/utils/supabase";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion"; // Add Variants to imports
 import { toast, Toaster } from "react-hot-toast";
 import { 
   ArrowUpRight, Activity, Sparkles, 
@@ -19,7 +19,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = { // Add the : Variants type here
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({ 
     opacity: 1, 
@@ -27,7 +27,7 @@ const itemVariants = {
     transition: { 
       duration: 0.8, 
       ease: [0.22, 1, 0.36, 1], 
-      delay: i * 0.05 // Uses the custom i prop
+      delay: i * 0.05
     } 
   })
 };
