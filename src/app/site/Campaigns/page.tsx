@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/utils/supabase";
-import { motion, AnimatePresence, Variants } from "framer-motion"; // Add Variants to imports
+import { motion, AnimatePresence, Variants } from "framer-motion"; 
 import { toast, Toaster } from "react-hot-toast";
 import { 
   ArrowUpRight, Activity, Sparkles, 
@@ -10,8 +10,8 @@ import {
   ShieldCheck, Zap, BarChart3, Target
 } from "lucide-react";
 
-// --- ANIMATION VARIANTS (Fixed) ---
-const containerVariants = {
+// --- ANIMATION VARIANTS ---
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -19,7 +19,9 @@ const containerVariants = {
   }
 };
 
-const itemVariants: Variants = { // Add the : Variants type here
+// Explicitly typing as Variants resolves the "not assignable to type" error 
+// when using a function for a variant property.
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({ 
     opacity: 1, 
@@ -65,48 +67,40 @@ export default function CampaignsPage() {
     if (data) setJoinedIds(data.map(m => m.campaign_id));
   };
 
-const handleJoinCampaign = async () => {
-  if (!user || !selectedCampaign) return;
+  const handleJoinCampaign = async () => {
+    if (!user || !selectedCampaign) return;
 
-  // 1. Define the async logic
-  const joinAction = async () => {
-    // We add .select() to ensure the operation returns the data for the toast to resolve
-    const { data, error } = await supabase
-      .from('campaign_members')
-      .insert([{ campaign_id: selectedCampaign.id, user_id: user.id }])
-      .select(); 
-    
-    if (error) throw error; 
-    return data;
+    const joinAction = async () => {
+      const { data, error } = await supabase
+        .from('campaign_members')
+        .insert([{ campaign_id: selectedCampaign.id, user_id: user.id }])
+        .select(); 
+      
+      if (error) throw error; 
+      return data;
+    };
+
+    const actionPromise = joinAction();
+
+    toast.promise(actionPromise, {
+      loading: 'Enrolling...',
+      success: 'Welcome to the movement! 🎉',
+      error: 'Error joining initiative.',
+    });
+
+    try {
+      await actionPromise;
+      setJoinedIds(prev => [...prev, selectedCampaign.id]);
+      setCampaigns(prev => prev.map(c => 
+        c.id === selectedCampaign.id 
+          ? { ...c, current_engagement: (c.current_engagement || 0) + 1 } 
+          : c
+      ));
+      setSelectedCampaign(null); 
+    } catch (err) {
+      console.error("Join failed:", err);
+    }
   };
-
-  // 2. Execute and capture the promise
-  const actionPromise = joinAction();
-
-  // 3. Pass the promise to the toast
-  toast.promise(actionPromise, {
-    loading: 'Enrolling...',
-    success: 'Welcome to the movement! 🎉',
-    error: 'Error joining initiative.',
-  });
-
-  try {
-    // 4. Await the CORRECT variable name (actionPromise)
-    await actionPromise;
-
-    // 5. Update local state on success
-    setJoinedIds(prev => [...prev, selectedCampaign.id]);
-    setCampaigns(prev => prev.map(c => 
-      c.id === selectedCampaign.id 
-        ? { ...c, current_engagement: (c.current_engagement || 0) + 1 } 
-        : c
-    ));
-    setSelectedCampaign(null); 
-  } catch (err) {
-    // Log the error for debugging; the toast handles the user-facing message
-    console.error("Join failed:", err);
-  }
-};
 
   const handleLeaveCampaign = async (campaignId: string, campaignName: string) => {
     if (!user) return;
@@ -164,23 +158,23 @@ const handleJoinCampaign = async () => {
 
       {/* --- HEADER --- */}
       <motion.header 
-               initial={{ opacity: 0, y: -20 }}
-               animate={{ opacity: 1, y: 0 }}
-               className="bg-[#FF6600] rounded-[2.5rem] p-8 md:p-14 shadow-[0_20px_50px_rgba(255,102,0,0.3)] flex flex-col lg:flex-row justify-between items-center gap-10 relative overflow-hidden"
-             >
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-[#FF6600] rounded-[2.5rem] p-8 md:p-14 shadow-[0_20px_50px_rgba(255,102,0,0.3)] flex flex-col lg:flex-row justify-between items-center gap-10 relative overflow-hidden"
+      >
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 blur-[120px] rounded-full -mr-48 -mt-48" />
         <div className="relative z-10 space-y-6 text-center lg:text-left">
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-white font-bold text-[10px] uppercase tracking-[0.3em]">
             <Activity size={14} className="animate-pulse" /> System Status: Live
           </div>
-         
+          
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-[0.8]">
             Impact <br /> <span className="text-black/20">Tracker.</span>
           </h1>
           <p className="max-w-md text-white/80 text-sm md:text-base font-medium leading-tight tracking-tight">
-        Quantifying global change through real-time engagement data <br className="hidden md:block" /> 
-        and strategic initiative monitoring for a better tomorrow.
-      </p>
+            Quantifying global change through real-time engagement data <br className="hidden md:block" /> 
+            and strategic initiative monitoring for a better tomorrow.
+          </p>
         </div>
         <div className="relative z-10">
           <button 
@@ -240,7 +234,7 @@ const handleJoinCampaign = async () => {
                   layout
                   key={c.id}
                   variants={itemVariants}
-                  custom={idx} // Passing index to the variant for stagger
+                  custom={idx}
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="group relative bg-white rounded-[3rem] p-5 border border-zinc-100 hover:border-zinc-200 hover:shadow-[0_40px_100px_-20px_rgba(0,0,0,0.08)] transition-all duration-700 flex flex-col h-full"
                 >
@@ -285,7 +279,6 @@ const handleJoinCampaign = async () => {
                       <h3 className="text-4xl font-black uppercase tracking-tighter leading-[0.85] text-zinc-900 group-hover:text-[#FF6600] transition-colors duration-500">
                         {c.name}
                       </h3>
-                      
                     </div>
 
                     <p className="text-zinc-500 text-sm font-medium leading-relaxed mb-8 line-clamp-3">
@@ -299,7 +292,7 @@ const handleJoinCampaign = async () => {
                         </div>
                         <div>
                           <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Impact</p>
-                          <p className="text-lg font-black text-zinc-900">{c.current_engagement.toLocaleString()}</p>
+                          <p className="text-lg font-black text-zinc-900">{c.current_engagement?.toLocaleString()}</p>
                         </div>
                       </div>
                       <div className="bg-zinc-50 rounded-3xl p-5 border border-zinc-100 flex items-center gap-4 group/stat">
@@ -308,7 +301,7 @@ const handleJoinCampaign = async () => {
                         </div>
                         <div>
                           <p className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Goal</p>
-                          <p className="text-lg font-black text-zinc-900">{c.target.toLocaleString()}</p>
+                          <p className="text-lg font-black text-zinc-900">{c.target?.toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
