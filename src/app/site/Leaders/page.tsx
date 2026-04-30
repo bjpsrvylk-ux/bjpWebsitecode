@@ -2,21 +2,25 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/utils/supabase";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion"; // 1. Import Variants
 import {
   Mail, Phone, Users, ArrowUpDown, Sparkles,
   X, Globe, ExternalLink, Award
 } from "lucide-react";
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 }
+    transition: { 
+      duration: 0.6, 
+      // 3. Optional: use a named easing or cast as 'any' if the array check fails
+      ease: [0.22, 1, 0.36, 1], 
+      delay: i * 0.05 
+    }
   })
 };
-
 export default function LeadersPage() {
   const [leaders, setLeaders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
