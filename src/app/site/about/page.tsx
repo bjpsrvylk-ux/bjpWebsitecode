@@ -42,13 +42,6 @@ const [data, setData] = useState<PageData>({
       scrollRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
   };
-  const [data, setData] = useState({
-    story: '',
-    mission: '',
-    team: [],
-    stats: [],
-    journey: []
-  });
 
   useEffect(() => {
     const fetchAll = async () => {
