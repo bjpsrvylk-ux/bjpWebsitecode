@@ -24,7 +24,11 @@ const itemVariants = {
   visible: (i: number) => ({ 
     opacity: 1, 
     y: 0, 
-    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 } 
+    transition: { 
+      duration: 0.8, 
+      ease: [0.22, 1, 0.36, 1], 
+      delay: i * 0.05 // Uses the custom i prop
+    } 
   })
 };
 
@@ -66,11 +70,11 @@ const handleJoinCampaign = async () => {
 
   // 1. Define the async logic
   const joinAction = async () => {
+    // We add .select() to ensure the operation returns the data for the toast to resolve
     const { data, error } = await supabase
       .from('campaign_members')
       .insert([{ campaign_id: selectedCampaign.id, user_id: user.id }])
-      .select() // Good practice to add .select() if you need the returned data
-      .single();
+      .select(); 
     
     if (error) throw error; 
     return data;
@@ -87,7 +91,7 @@ const handleJoinCampaign = async () => {
   });
 
   try {
-    // 4. Await the actual promise we created
+    // 4. Await the CORRECT variable name (actionPromise)
     await actionPromise;
 
     // 5. Update local state on success
@@ -99,8 +103,8 @@ const handleJoinCampaign = async () => {
     ));
     setSelectedCampaign(null); 
   } catch (err) {
+    // Log the error for debugging; the toast handles the user-facing message
     console.error("Join failed:", err);
-    // No need for a toast here, toast.promise handles the error UI
   }
 };
 
