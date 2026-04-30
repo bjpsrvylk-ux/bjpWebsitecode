@@ -61,31 +61,48 @@ export default function CampaignsPage() {
     if (data) setJoinedIds(data.map(m => m.campaign_id));
   };
 
-  const handleJoinCampaign = async () => {
-    if (!user || !selectedCampaign) return;
+const handleJoinCampaign = async () => {
+  if (!user || !selectedCampaign) return;
 
-    const promise = supabase
+  // 1. Define the async logic
+  const joinAction = async () => {
+    const { data, error } = await supabase
       .from('campaign_members')
-      .insert([{ campaign_id: selectedCampaign.id, user_id: user.id }]);
-
-    toast.promise(promise, {
-      loading: 'Enrolling...',
-      success: 'Welcome to the movement! 🎉',
-      error: 'Error joining initiative.',
-    });
-
-    const { error } = await promise;
-
-    if (!error) {
-      setJoinedIds(prev => [...prev, selectedCampaign.id]);
-      setCampaigns(prev => prev.map(c => 
-        c.id === selectedCampaign.id 
-          ? { ...c, current_engagement: (c.current_engagement || 0) + 1 } 
-          : c
-      ));
-      setSelectedCampaign(null); 
-    }
+      .insert([{ campaign_id: selectedCampaign.id, user_id: user.id }])
+      .select() // Good practice to add .select() if you need the returned data
+      .single();
+    
+    if (error) throw error; 
+    return data;
   };
+
+  // 2. Execute and capture the promise
+  const actionPromise = joinAction();
+
+  // 3. Pass the promise to the toast
+  toast.promise(actionPromise, {
+    loading: 'Enrolling...',
+    success: 'Welcome to the movement! 🎉',
+    error: 'Error joining initiative.',
+  });
+
+  try {
+    // 4. Await the actual promise we created
+    await actionPromise;
+
+    // 5. Update local state on success
+    setJoinedIds(prev => [...prev, selectedCampaign.id]);
+    setCampaigns(prev => prev.map(c => 
+      c.id === selectedCampaign.id 
+        ? { ...c, current_engagement: (c.current_engagement || 0) + 1 } 
+        : c
+    ));
+    setSelectedCampaign(null); 
+  } catch (err) {
+    console.error("Join failed:", err);
+    // No need for a toast here, toast.promise handles the error UI
+  }
+};
 
   const handleLeaveCampaign = async (campaignId: string, campaignName: string) => {
     if (!user) return;
