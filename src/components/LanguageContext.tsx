@@ -1,10 +1,19 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-const LanguageContext = createContext({
+// 1. Define a strict interface for the context
+interface LanguageContextType {
+  lang: string;
+  setLang: (lang: string) => void;
+  t: (en: string, kn: string) => string; // explicitly set return to string
+  autoTranslate: (text: string) => string;
+}
+
+// 2. Initialize with the interface to avoid the "" literal trap
+const LanguageContext = createContext<LanguageContextType>({
   lang: 'en',
-  setLang: (lang: string) => {},
-  t: (en: string, kn: string) => '',
+  setLang: () => {},
+  t: (en: string, kn: string) => en, 
   autoTranslate: (text: string) => text 
 });
 
@@ -12,7 +21,6 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
   const [lang, setLang] = useState('en');
 
   useEffect(() => {
-    // Helper to read cookies
     const getCookie = (name: string) => {
       if (typeof document === 'undefined') return null;
       const value = `; ${document.cookie}`;
@@ -21,18 +29,16 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
       return null;
     };
 
-    // Check if Google is already translating to Kannada
     const savedGoogleLang = getCookie('googtrans');
     if (savedGoogleLang?.includes('/kn')) {
       setLang('kn');
     }
   }, []);
 
-  // Manual fallback for specific static UI
-  const t = (en: string, kn: string) => (lang === 'en' ? en : kn);
+  // 3. Explicitly type the return as string
+  const t = (en: string, kn: string): string => (lang === 'en' ? en : kn);
 
-  // This is now just a pass-through because Google handles the DOM
-  const autoTranslate = (text: string) => text || "";
+  const autoTranslate = (text: string): string => text || "";
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t, autoTranslate }}>
