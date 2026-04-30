@@ -16,11 +16,25 @@ const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 };
+// Define a type for your state to keep it clean
+type PageData = {
+  story: string;
+  mission: string;
+  team: any[];
+  stats: any[];
+  journey: any[];
+};
 
 export default function AboutUsPage() {
   const [settings, setSettings] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
+const [data, setData] = useState<PageData>({
+    story: '',
+    mission: '',
+    team: [],
+    stats: [],
+    journey: []
+  });
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
