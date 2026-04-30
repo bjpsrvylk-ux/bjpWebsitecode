@@ -2,15 +2,19 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from "@/utils/supabase";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion"; // Add Variants to your import
 import { X, Play, Sparkles, LayoutGrid, ArrowUpDown, Filter, Eye } from 'lucide-react';
 
-const itemVariants = {
+const itemVariants: Variants = { // Define the type here
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({ 
     opacity: 1, 
     y: 0, 
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 } 
+    transition: { 
+      duration: 0.6, 
+      ease: [0.22, 1, 0.36, 1], 
+      delay: i * 0.05 
+    } 
   })
 };
 
