@@ -12,7 +12,7 @@ import {
   LogOut,
   Heart
 } from 'lucide-react';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import LoginModal from './LoginModal';
 
 export default function Header() {
@@ -52,15 +52,15 @@ useEffect(() => {
   return () => clearTimeout(timer);
 }, []);
 
-  const logoVariants = {
-    initial: { opacity: 0, scale: 0.8, y: -20 },
-    animate: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
-  };
+  const logoVariants: Variants = { // Add the type here
+  initial: { opacity: 0, scale: 0.8, y: -20 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
+};
 
   useEffect(() => {
     setMounted(true);
