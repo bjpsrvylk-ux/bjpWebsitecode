@@ -19,11 +19,12 @@ export default function AboutUsAdmin() {
   const [team, setTeam] = useState<any[]>([]);
   // ... rest of your states
 // 1. Add the stats state with your desired placeholders
-const [stats, setStats] = useState([
-  { label: 'Founded', value: '0' },
-  { label: 'Projects', value: '0' },
-  { label: 'Members', value: '0' },
-  { label: 'Awards', value: '0' }
+// Define the type to allow optional id
+const [stats, setStats] = useState<{ id?: number | null; label: string; value: string }[]>([
+  { id: null, label: 'Founded', value: '0' },
+  { id: null, label: 'Projects', value: '0' },
+  { id: null, label: 'Members', value: '0' },
+  { id: null, label: 'Awards', value: '0' }
 ]);
   const [currentMember, setCurrentMember] = useState<any>({
     id: null,
