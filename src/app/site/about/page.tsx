@@ -77,89 +77,92 @@ const [data, setData] = useState<PageData>({
   return (
     <div className="bg-[#F8F9FA] text-zinc-900 selection:bg-[#FF6600] selection:text-white overflow-hidden">
 
-      {/* --- 1. PREMIUM MINIMALIST HERO --- */}
-      <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 py-20 overflow-hidden bg-white">
+    {/* --- PREMIUM MINIMALIST HERO (Mobile Optimized) --- */}
+<section className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 py-12 lg:py-20 overflow-hidden bg-white">
+  
+  {/* Right-side Image Composition - Optimized for Mobile Stacking */}
+  <div className="absolute top-0 right-0 w-full lg:w-1/2 h-[50vh] lg:h-full z-0">
+    <div className="relative w-full h-full">
+      <motion.div
+        initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
+        animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+        className="relative w-full h-full overflow-hidden rounded-bl-[3rem] md:rounded-bl-[4rem] lg:rounded-bl-[10rem] shadow-2xl"
+      >
+        <motion.img
+          initial={{ scale: 1.2 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2 }}
+          src="/ban.jpg"
+          className="w-full h-full object-cover brightness-90 hover:grayscale-0 transition-all duration-1000"
+        />
 
-        {/* Right-side Image Composition */}
-        <div className="absolute top-0 right-0 w-full lg:w-1/2 h-[45vh] lg:h-full z-0">
-          <div className="relative w-full h-full">
-            <motion.div
-              initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
-              animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-              transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
-              className="relative w-full h-full overflow-hidden rounded-bl-[4rem] lg:rounded-bl-[10rem] shadow-2xl"
-            >
-              <motion.img
-                initial={{ scale: 1.2 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 2 }}
-                src="/ban.jpg"
-                className="w-full h-full object-cover brightness-90 hover:grayscale-0 transition-all duration-1000"
-              />
-
-              {/* --- CLIENT SATISFACTION FLOATING BADGE --- */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.2 }}
-                className="absolute bottom-10 left-10 lg:left-[-15%] p-6 backdrop-blur-xl bg-white/80 border border-white/20 shadow-2xl rounded-2xl max-w-[200px] z-20"
-              >
-                <div className="flex flex-col gap-1">
-                  <span className="text-[#FF6600] text-3xl font-black ">100%</span>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-800 leading-tight">
-                    Client <br /> Satisfaction
-                  </span>
-                  <div className="w-8 h-[2px] bg-[#FF6600] mt-2" />
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-
-        <div className="relative z-10 max-w-4xl">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp}>
-
-            {/* REDUCED SIZE TITLE */}
-            <div className="flex items-center gap-3 mb-8">
-              <div className="h-[1px] w-8 bg-[#FF6600]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400">
-                Global Leadership <span className="text-zinc-800">/</span> Est. 2008
-              </span>
-            </div>
-
-            {/* SCALE REDUCED HEADLINE (From 10rem to 7rem) */}
-            <h1 className="text-6xl md:text-[6rem] lg:text-[7.5rem] font-black leading-[0.9] tracking-tighter uppercase mb-8 text-zinc-900">
-              Shape <br />
-              <span className="text-[#FF6600] relative">
-                The future.
-                <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-zinc-100" />
-              </span>
-            </h1>
-
-            <p className="text-lg md:text-xl text-zinc-500 max-w-xl font-medium leading-relaxed pl-8 border-l-2 border-[#FF6600]/30">
-              {settings?.description || "Building structural excellence and community impact through visionary leadership."}
-            </p>
-          </motion.div>
-        </div>
-
-        {/* STATS BAR */}
+        {/* --- CLIENT SATISFACTION FLOATING BADGE --- */}
+        {/* Hidden on very small screens or repositioned for thumb-friendliness */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 max-w-4xl relative z-10"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-6 left-6 lg:bottom-10 lg:left-[-15%] p-4 lg:p-6 backdrop-blur-xl bg-white/80 border border-white/20 shadow-2xl rounded-2xl max-w-[140px] lg:max-w-[200px] z-20"
         >
-          {data.stats.slice(0, 4).map((s: any, i: number) => (
-            <div key={i} className="group cursor-default">
-              <h2 className="text-3xl font-black text-zinc-900 group-hover:text-[#FF6600] transition-colors duration-300">
-                {s.value}<span className="text-[#FF6600] text-sm ml-0.5">+</span>
-              </h2>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">{s.label}</p>
-            </div>
-          ))}
+          <div className="flex flex-col gap-1">
+            <span className="text-[#FF6600] text-xl lg:text-3xl font-black">100%</span>
+            <span className="text-[8px] lg:text-[10px] font-black uppercase tracking-[0.2em] text-zinc-800 leading-tight">
+              Client <br /> Satisfaction
+            </span>
+            <div className="w-6 h-[2px] bg-[#FF6600] mt-1 lg:mt-2" />
+          </div>
         </motion.div>
+      </motion.div>
+    </div>
+  </div>
 
-      </section>
+  {/* Content Wrapper */}
+  {/* Added padding-top on mobile to push text below the absolute image background */}
+  <div className="relative z-10 max-w-4xl mt-[45vh] lg:mt-0">
+    <motion.div initial="hidden" animate="visible" variants={fadeUp}>
+
+      {/* SUBTITLE */}
+      <div className="flex items-center gap-3 mb-6 lg:mb-8">
+        <div className="h-[1px] w-6 lg:w-8 bg-[#FF6600]" />
+        <span className="text-[8px] lg:text-[10px] font-bold uppercase tracking-[0.3em] lg:tracking-[0.4em] text-zinc-400">
+          Global Leadership <span className="text-zinc-800">/</span> Est. 2008
+        </span>
+      </div>
+
+      {/* HEADLINE - Fluid sizing for mobile */}
+      <h1 className="text-5xl sm:text-6xl md:text-[6rem] lg:text-[7.5rem] font-black leading-[0.95] lg:leading-[0.9] tracking-tighter uppercase mb-6 lg:mb-8 text-zinc-900">
+        Shape <br />
+        <span className="text-[#FF6600] relative">
+          The future.
+          <span className="absolute -bottom-1 lg:-bottom-2 left-0 w-1/3 h-1 bg-zinc-100" />
+        </span>
+      </h1>
+
+      <p className="text-base lg:text-xl text-zinc-500 max-w-xl font-medium leading-relaxed pl-4 lg:pl-8 border-l-2 border-[#FF6600]/30">
+        {settings?.description || "Building structural excellence and community impact through visionary leadership."}
+      </p>
+    </motion.div>
+
+    {/* STATS BAR - Grid adjusted for small screens */}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.8 }}
+      className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 mt-12 lg:mt-16 max-w-4xl"
+    >
+      {data.stats.slice(0, 4).map((s: any, i: number) => (
+        <div key={i} className="group cursor-default">
+          <h2 className="text-2xl lg:text-3xl font-black text-zinc-900 group-hover:text-[#FF6600] transition-colors duration-300">
+            {s.value}<span className="text-[#FF6600] text-sm ml-0.5">+</span>
+          </h2>
+          <p className="text-[8px] lg:text-[9px] font-bold uppercase tracking-widest text-zinc-400">{s.label}</p>
+        </div>
+      ))}
+    </motion.div>
+  </div>
+
+</section>
 
       {/* --- 2. FOUNDER ARCHETYPE --- */}
       <section className="py-2 bg-zinc-900 text-white rounded-[4rem] lg:rounded-[10rem] mx-4">

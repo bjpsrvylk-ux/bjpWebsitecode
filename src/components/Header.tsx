@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from "@/utils/supabase";
 import Link from 'next/link';
-import { useTheme } from "next-themes";
 import { useRouter } from 'next/navigation';
 import { useLang } from "@/components/LanguageContext";
 import {
@@ -16,7 +15,7 @@ import { motion, AnimatePresence, Variants } from "framer-motion";
 import LoginModal from './LoginModal';
 
 export default function Header() {
-  const { lang, setLang, t, autoTranslate } = useLang();
+  const { lang, setLang, t } = useLang();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [siteData, setSiteData] = useState<any>(null);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -25,42 +24,23 @@ export default function Header() {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
 
-  // 1. Logic to trigger the Google Translate Plugin
-  // Inside your Header component
-const handleLanguageSwitch = (langCode: string) => {
-  // 1. Update your Context state
-  setLang(langCode);
+  const handleLanguageSwitch = (langCode: string) => {
+    setLang(langCode);
+    const cookieValue = `/en/${langCode}`;
+    document.cookie = `googtrans=${cookieValue}; path=/`;
+    document.cookie = `googtrans=${cookieValue}; domain=${window.location.hostname}; path=/`;
+    window.location.reload();
+  };
 
-  // 2. Set the Google Translate Cookie
-  // This tells the Google script to translate the page to Kannada on load
-  const cookieValue = `/en/${langCode}`;
-  document.cookie = `googtrans=${cookieValue}; path=/`;
-  // Also set it for the domain to ensure it persists across subpages
-  document.cookie = `googtrans=${cookieValue}; domain=${window.location.hostname}; path=/`;
-
-  // 3. Force a reload
-  // This is the "secret sauce" to make sure Next.js and Google don't fight.
-  // When the page reloads, Google reads the cookie and translates BEFORE the UI flickers.
-  window.location.reload();
-};
-
-useEffect(() => {
-  const timer = setTimeout(() => {
-    handleLanguageSwitch(lang);
-  }, 10000000);
-
-  return () => clearTimeout(timer);
-}, []);
-
-  const logoVariants: Variants = { // Add the type here
-  initial: { opacity: 0, scale: 0.8, y: -20 },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
-};
+  const logoVariants: Variants = {
+    initial: { opacity: 0, scale: 0.8, y: -20 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -76,24 +56,13 @@ useEffect(() => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
- const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
-      // 1. Tell Supabase to end the session
       await supabase.auth.signOut();
-      
-      // 2. Clear local user state immediately so the UI updates
       setUser(null);
-      
-      // 3. Close mobile menu if it's open
       setMobileMenuOpen(false);
-
-      // 4. Refresh and Redirect
-      // router.refresh() updates the server components
-      // window.location.href forces a hard reload to the home page 
-      // which is the safest way to clear all auth states.
       router.refresh();
-      window.location.href = '/site/home'; 
-      
+      window.location.href = '/site/home';
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -112,138 +81,119 @@ useEffect(() => {
 
   return (
     <header className="w-full fixed top-0 z-[100] transition-all duration-300">
+      {/* --- MAIN NAVIGATION BAR --- */}
       <nav className={`px-6 md:px-12 transition-all duration-700 border-b ${isScrolled
         ? 'bg-black/95 backdrop-blur-2xl shadow-2xl py-3 border-brand-green/20'
         : 'bg-black/40 backdrop-blur-md py-5 border-white/5'
         }`}>
-        <motion.div className="max-w-[1400px] mx-auto flex items-center justify-between">
-
-          {/* LOGO SECTION */}
+        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+          
+          {/* LOGO */}
           <motion.div variants={logoVariants} initial="initial" animate="animate">
             <Link href="/" className="flex items-center gap-5 group">
               {siteData.logo_url && (
-                <motion.div
-                  className="relative p-2.5 bg-white/5 rounded-2xl shadow-2xl backdrop-blur-md border border-white/10 overflow-hidden group"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <motion.img
-                    src={siteData.logo_url}
-                    alt="Logo"
-                    className="w-12 h-12 object-contain relative z-10 filter drop-shadow-md"
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-green scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
-                </motion.div>
+                <div className="relative p-2.5 bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                  <img src={siteData.logo_url} alt="Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
+                </div>
               )}
-
               <div className="flex flex-col">
-                <span className="text-2xl font-black text-white uppercase tracking-tighter">
-                  {/* Ensure this is clean text for Google to detect */}
-                  <span>{siteData.site_name}</span>
-                  <span className="text-brand-yellow">.</span>
+                <span className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter">
+                  {siteData.site_name}<span className="text-brand-yellow">.</span>
                 </span>
-
-                <span className="text-[10px] font-bold text-brand-green uppercase tracking-[0.2em] mt-1.5">
-                  {/* Ensure this is clean text for Google to detect */}
-                  <span>{siteData.tag_line}</span>
+                <span className="text-[9px] md:text-[10px] font-bold text-brand-green uppercase tracking-[0.2em]">
+                  {siteData.tag_line}
                 </span>
               </div>
             </Link>
           </motion.div>
 
-          {/* DESKTOP NAV & ACTIONS */}
+          {/* DESKTOP NAV */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.path}
-                className="group relative text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all duration-300"
-              >
-                <span>{link.name}</span>
-                <span className="absolute -bottom-2 left-0 w-0 h-0.5 bg-brand-green transition-all duration-300 group-hover:w-full" />
+              <Link key={link.name} href={link.path} className="text-[11px] font-black uppercase tracking-[0.2em] text-white hover:text-brand-green transition-all">
+                {link.name}
               </Link>
             ))}
-
-            {/* --- PREMIUM LANGUAGE TOGGLE --- */}
+            
             <div className="flex items-center bg-white/5 border border-white/10 p-1 rounded-xl ml-4">
-              <button
-                onClick={() => handleLanguageSwitch('en')}
-                className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all ${lang === 'en' ? 'bg-brand-green text-white shadow-lg' : 'text-zinc-500 hover:text-white'}`}
-              >
-                EN
+              <button onClick={() => handleLanguageSwitch('en')} className={`px-3 py-1.5 rounded-lg text-[9px] font-black ${lang === 'en' ? 'bg-brand-green text-white' : 'text-white'}`}>EN</button>
+              <button onClick={() => handleLanguageSwitch('kn')} className={`px-3 py-1.5 rounded-lg text-[9px] font-black ${lang === 'kn' ? 'bg-brand-green text-white' : 'text-white'}`}>ಕನ್ನಡ</button>
+            </div>
+
+            <Link href="/site/donate">
+              <button className="flex items-center gap-3 bg-white text-black px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-brand-green hover:text-white transition-all">
+                <Heart size={14} className="fill-current" />
+                <span>{t("Donate Now", "ಈಗಲೇ ದೇಣಿಗೆ ನೀಡಿ")}</span>
               </button>
-              <button
-                onClick={() => handleLanguageSwitch('kn')}
-                className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all ${lang === 'kn' ? 'bg-brand-green text-white shadow-lg' : 'text-zinc-500 hover:text-white'}`}
+            </Link>
+
+            {user ? (
+              <button onClick={handleLogout} className="text-white hover:text-red-500 transition-colors"><LogOut size={20}/></button>
+            ) : (
+              <button onClick={() => setIsLoginOpen(true)} className="bg-brand-green text-white px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest">{t("Join Now", "ಈಗಲೇ ಸೇರಿ")}</button>
+            )}
+          </div>
+
+          {/* MOBILE TOGGLE BUTTON */}
+          <div className="lg:hidden flex items-center gap-3">
+             <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="p-3 text-brand-green bg-white/5 rounded-xl border border-white/10"
               >
-                ಕನ್ನಡ
+                <Menu size={24} />
+              </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* --- MOBILE MENU OVERLAY (Properly Outside Nav) --- */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 z-[120] bg-black flex flex-col lg:hidden"
+          >
+            <div className="flex items-center justify-between px-6 py-6 border-b border-white/10">
+              <span className="text-xl font-black text-white uppercase">{siteData.site_name}</span>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-3 text-brand-green bg-white/5 rounded-xl">
+                <X size={24} />
               </button>
             </div>
 
-            {/* DONATE BUTTON */}
-            <Link href="/site/donate">
-              <motion.button
-                className="flex items-center gap-3 bg-white text-black px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all hover:bg-brand-green hover:text-white"
-                whileHover={{ scale: 1.05, y: -2 }}
-              >
-                <Heart size={14} className="fill-current" />
-                <span>{t("Donate Now", "ಈಗಲೇ ದೇಣಿಗೆ ನೀಡಿ")}</span>
-              </motion.button>
-            </Link>
-
-            {/* AUTH SECTION */}
-            <AnimatePresence mode="wait">
-              {user ? (
-                <div className="group relative">
-                  <motion.button
-                    className="w-11 h-11 rounded-xl border border-white/10 p-0.5 overflow-hidden shadow-lg hover:border-brand-green transition-all"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <div className="w-full h-full bg-zinc-800 text-brand-green flex items-center justify-center rounded-[10px]">
-                      <User size={18} />
-                    </div>
-                  </motion.button>
-                  <div className="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible z-50 transition-all duration-200">
-                    <div className="bg-zinc-950 border border-white/10 rounded-3xl shadow-2xl p-2 w-64 backdrop-blur-xl">
-                      <div className="p-1 space-y-1">
-                        <button onClick={handleLogout} className="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-500/10 rounded-2xl text-xs font-bold uppercase transition-all">
-                          <LogOut size={14} /> Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+            <div className="flex-1 overflow-y-auto px-8 py-10 flex flex-col gap-8">
+              {navLinks.map((link) => (
+                <Link key={link.name} href={link.path} onClick={() => setMobileMenuOpen(false)} className="text-4xl font-black uppercase tracking-tighter text-white">
+                  {link.name}
+                </Link>
+              ))}
+              
+              <div className="flex flex-col gap-4 mt-4">
+                <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Select Language</p>
+                <div className="flex gap-2">
+                  <button onClick={() => handleLanguageSwitch('en')} className={`px-6 py-3 rounded-xl font-black text-xs ${lang === 'en' ? 'bg-brand-green text-white' : 'bg-white/5 text-white'}`}>EN</button>
+                  <button onClick={() => handleLanguageSwitch('kn')} className={`px-6 py-3 rounded-xl font-black text-xs ${lang === 'kn' ? 'bg-brand-green text-white' : 'bg-white/5 text-white'}`}>ಕನ್ನಡ</button>
                 </div>
-              ) : (
-                <motion.button
-                  onClick={() => setIsLoginOpen(true)}
-                  className="bg-brand-green text-white px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-brand-green/20 hover:brightness-110"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {t("Join Now", "ಈಗಲೇ ಸೇರಿ")}
-                </motion.button>
-              )}
-            </AnimatePresence>
-          </div>
+              </div>
+            </div>
 
-          {/* MOBILE MENU BUTTON */}
-          <div className="lg:hidden flex items-center gap-4">
-            <button
-              onClick={() => handleLanguageSwitch(lang === 'en' ? 'kn' : 'en')}
-              className="text-[10px] font-black text-brand-green border border-brand-green/30 px-3 py-2 rounded-lg uppercase"
-            >
-              {lang === 'en' ? "ಕನ್ನಡ" : "EN"}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-3 text-brand-green bg-white/5 rounded-xl"
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </motion.div>
-      </nav>
+            <div className="p-8 bg-zinc-950 space-y-4">
+              <Link href="/site/donate" onClick={() => setMobileMenuOpen(false)}>
+                <button className="w-full flex items-center justify-center gap-3 bg-white text-black py-5 rounded-2xl font-black uppercase text-xs">
+                  <Heart size={18} className="fill-current" /> {t("Donate Now", "ಈಗಲೇ ದೇಣಿಗೆ ನೀಡಿ")}
+                </button>
+              </Link>
+              {user ? (
+                <button onClick={handleLogout} className="w-full py-5 rounded-2xl bg-red-500/10 text-red-500 font-black uppercase text-xs border border-red-500/20">Sign Out</button>
+              ) : (
+                <button onClick={() => {setMobileMenuOpen(false); setIsLoginOpen(true);}} className="w-full bg-brand-green text-white py-5 rounded-2xl font-black uppercase text-xs">{t("Join Now", "ಈಗಲೇ ಸೇರಿ")}</button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </header>

@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/utils/supabase";
-import { motion, AnimatePresence, Variants } from "framer-motion"; 
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { toast, Toaster } from "react-hot-toast";
-import { 
-  ArrowUpRight, Activity, Sparkles, 
+import {
+  ArrowUpRight, Activity, Sparkles,
   ArrowUpDown, CheckCircle2, Lock, LogOut,
   ShieldCheck, Zap, BarChart3, Target
 } from "lucide-react";
@@ -23,14 +23,14 @@ const containerVariants: Variants = {
 // when using a function for a variant property.
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({ 
-    opacity: 1, 
-    y: 0, 
-    transition: { 
-      duration: 0.8, 
-      ease: [0.22, 1, 0.36, 1], 
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1],
       delay: i * 0.05
-    } 
+    }
   })
 };
 
@@ -74,9 +74,9 @@ export default function CampaignsPage() {
       const { data, error } = await supabase
         .from('campaign_members')
         .insert([{ campaign_id: selectedCampaign.id, user_id: user.id }])
-        .select(); 
-      
-      if (error) throw error; 
+        .select();
+
+      if (error) throw error;
       return data;
     };
 
@@ -91,12 +91,12 @@ export default function CampaignsPage() {
     try {
       await actionPromise;
       setJoinedIds(prev => [...prev, selectedCampaign.id]);
-      setCampaigns(prev => prev.map(c => 
-        c.id === selectedCampaign.id 
-          ? { ...c, current_engagement: (c.current_engagement || 0) + 1 } 
+      setCampaigns(prev => prev.map(c =>
+        c.id === selectedCampaign.id
+          ? { ...c, current_engagement: (c.current_engagement || 0) + 1 }
           : c
       ));
-      setSelectedCampaign(null); 
+      setSelectedCampaign(null);
     } catch (err) {
       console.error("Join failed:", err);
     }
@@ -120,7 +120,7 @@ export default function CampaignsPage() {
 
               if (!error) {
                 setJoinedIds(prev => prev.filter(id => id !== campaignId));
-                setCampaigns(prev => prev.map(c => 
+                setCampaigns(prev => prev.map(c =>
                   c.id === campaignId ? { ...c, current_engagement: Math.max(0, (c.current_engagement || 0) - 1) } : c
                 ));
                 toast.success("Initiative left successfully", { icon: '👋' });
@@ -157,7 +157,7 @@ export default function CampaignsPage() {
       <Toaster position="bottom-right" reverseOrder={false} />
 
       {/* --- HEADER --- */}
-      <motion.header 
+      <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-[#FF6600] rounded-[2.5rem] p-8 md:p-14 shadow-[0_20px_50px_rgba(255,102,0,0.3)] flex flex-col lg:flex-row justify-between items-center gap-10 relative overflow-hidden"
@@ -167,17 +167,17 @@ export default function CampaignsPage() {
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-white font-bold text-[10px] uppercase tracking-[0.3em]">
             <Activity size={14} className="animate-pulse" /> System Status: Live
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-[0.8]">
             Impact <br /> <span className="text-black/20">Tracker.</span>
           </h1>
           <p className="max-w-md text-white/80 text-sm md:text-base font-medium leading-tight tracking-tight">
-            Quantifying global change through real-time engagement data <br className="hidden md:block" /> 
+            Quantifying global change through real-time engagement data <br className="hidden md:block" />
             and strategic initiative monitoring for a better tomorrow.
           </p>
         </div>
         <div className="relative z-10">
-          <button 
+          <button
             onClick={() => setIsAscending(!isAscending)}
             className="flex items-center gap-5 px-10 py-6 bg-black rounded-[2rem] hover:scale-[1.02] transition-all shadow-2xl group"
           >
@@ -204,11 +204,10 @@ export default function CampaignsPage() {
             <button
               key={status.id}
               onClick={() => setStatusFilter(status.id)}
-              className={`whitespace-nowrap px-10 py-4 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${
-                statusFilter === status.id 
-                  ? 'bg-[#FF6600] text-white shadow-[0_15px_30px_rgba(255,102,0,0.3)] scale-105' 
+              className={`whitespace-nowrap px-10 py-4 text-[10px] font-black uppercase tracking-widest rounded-full transition-all duration-500 ${statusFilter === status.id
+                  ? 'bg-[#FF6600] text-white shadow-[0_15px_30px_rgba(255,102,0,0.3)] scale-105'
                   : 'text-zinc-400 hover:text-black hover:bg-zinc-50'
-              }`}
+                }`}
             >
               {status.label}
             </button>
@@ -218,7 +217,7 @@ export default function CampaignsPage() {
 
       {/* --- CAMPAIGN GRID --- */}
       <section className="max-w-[1600px] mx-auto px-6 pb-32">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -240,10 +239,10 @@ export default function CampaignsPage() {
                 >
                   {/* Visual Image Section */}
                   <div className="relative h-96 rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl">
-                    <img 
-                      src={c.banner_url || "/placeholder.jpg"} 
-                      className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0" 
-                      alt={c.name} 
+                    <img
+                      src={c.banner_url || "/placeholder.jpg"}
+                      className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110 grayscale-[20%] group-hover:grayscale-0"
+                      alt={c.name}
                     />
                     <div className="absolute top-6 left-6 flex gap-2">
                       <span className="px-5 py-2.5 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-white border border-white/20">
@@ -264,10 +263,10 @@ export default function CampaignsPage() {
                         </p>
                       </div>
                       <div className="relative z-10 w-12 h-12 rounded-full bg-[#FF6600] flex items-center justify-center text-white shadow-xl animate-pulse">
-                          <Zap size={20} fill="currentColor" />
+                        <Zap size={20} fill="currentColor" />
                       </div>
-                      <div 
-                        className="absolute bottom-0 left-0 h-1 bg-[#FF6600] transition-all duration-1000" 
+                      <div
+                        className="absolute bottom-0 left-0 h-1 bg-[#FF6600] transition-all duration-1000"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
@@ -308,14 +307,14 @@ export default function CampaignsPage() {
 
                     <div className="mt-auto">
                       {isJoined ? (
-                        <button 
+                        <button
                           onClick={() => handleLeaveCampaign(c.id, c.name)}
                           className="w-full py-6 bg-zinc-50 text-zinc-400 hover:bg-red-50 hover:text-red-600 rounded-[2rem] font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 transition-all border border-zinc-100"
                         >
                           <LogOut size={16} /> Opt-out of Initiative
                         </button>
                       ) : (
-                        <button 
+                        <button
                           onClick={() => setSelectedCampaign(c)}
                           className="w-full py-6 bg-black text-white hover:bg-[#FF6600] rounded-[2rem] font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-[0.98] group/btn"
                         >
@@ -334,7 +333,7 @@ export default function CampaignsPage() {
       {/* Join Modal */}
       <AnimatePresence>
         {selectedCampaign && (
-          <JoinDetailModal 
+          <JoinDetailModal
             isOpen={!!selectedCampaign}
             campaign={selectedCampaign}
             onClose={() => setSelectedCampaign(null)}
@@ -361,7 +360,7 @@ function JoinDetailModal({ isOpen, onClose, campaign, onJoin, isLoggedIn }: any)
               By confirming your enrollment, you become a stakeholder in this initiative. You'll receive real-time updates as we approach the target goal of {campaign?.target?.toLocaleString()} participants.
             </p>
           </div>
-          
+
           {!isLoggedIn && (
             <div className="flex items-center gap-4 bg-amber-50 p-6 rounded-[2rem] border border-amber-100 text-amber-700 text-xs font-black uppercase tracking-widest">
               <Lock size={20} /> Authentication required to sync progress.
@@ -369,14 +368,14 @@ function JoinDetailModal({ isOpen, onClose, campaign, onJoin, isLoggedIn }: any)
           )}
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button 
-              onClick={isLoggedIn ? onJoin : onClose} 
+            <button
+              onClick={isLoggedIn ? onJoin : onClose}
               className="flex-[2] bg-[#FF6600] text-white py-6 rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-lg shadow-orange-200 active:scale-95 transition-transform"
             >
               {isLoggedIn ? "Confirm Enrollment" : "I Understand"}
             </button>
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="flex-1 px-8 py-6 bg-zinc-100 text-zinc-500 rounded-[2rem] font-black uppercase tracking-widest text-[10px] hover:bg-zinc-200 transition-colors"
             >
               Close

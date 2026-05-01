@@ -98,7 +98,7 @@ export default function LeadersPage() {
         <section className="pb-24">
           <motion.div
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+    className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
           >
             <AnimatePresence mode="popLayout">
               {sortedLeaders.map((l, idx) => (
