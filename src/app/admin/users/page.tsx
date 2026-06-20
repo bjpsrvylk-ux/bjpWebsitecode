@@ -74,7 +74,7 @@ export default function AdminUsersPage() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Suvarna karnataka Janashakthi Vedike / System Authority</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Bharatiya Janata Party / System Authority</p>
             </div>
             <h1 className="text-5xl font-black uppercase tracking-tighter text-slate-900 leading-none">
               Admin Profiles<span className="text-blue-600">.</span>

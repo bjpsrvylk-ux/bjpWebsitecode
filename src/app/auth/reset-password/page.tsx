@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
             Set New <span className="text-indigo-600">Password</span>
           </h2>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Suvarna karnataka Janashakthi Vedike Security Portal
+            Bharatiya Janata Party Security Portal
           </p>
         </div>
 

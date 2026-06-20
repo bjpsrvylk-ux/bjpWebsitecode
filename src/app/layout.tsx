@@ -8,8 +8,8 @@ import Script from "next/script";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Suvarna karnataka Janashakthi Vedike",
-  description: "Suvarna karnataka Janashakthi Vedike",
+  title: "Bharatiya Janata Party",
+  description: "Bharatiya Janata Party",
 };
 
 declare global {

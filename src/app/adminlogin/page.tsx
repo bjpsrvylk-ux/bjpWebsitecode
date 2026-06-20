@@ -12,7 +12,7 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   
   // Dynamic Branding State
-  const [branding, setBranding] = useState({ name: "Suvarna karnataka Janashakthi Vedike", logo: "" });
+  const [branding, setBranding] = useState({ name: "Bharatiya Janata Party", logo: "" });
   const router = useRouter();
 
   // Fetch Site Branding on Load
@@ -25,7 +25,7 @@ export default function AdminLogin() {
         .single();
       if (data) {
         setBranding({ 
-          name: data.site_name || "Suvarna karnataka Janashakthi Vedike", 
+          name: data.site_name || "Bharatiya Janata Party", 
           logo: data.logo_url || "" 
         });
       }
@@ -49,7 +49,7 @@ export default function AdminLogin() {
       if (dbError || !data) {
         setError("Access Denied: Invalid Admin Credentials");
       } else {
-        localStorage.setItem("admin_token", "Suvarna karnataka Janashakthi Vedike_authenticated");
+        localStorage.setItem("admin_token", "Bharatiya Janata Party_authenticated");
         router.push("/admin/dashboard");
       }
     } catch (err) {
